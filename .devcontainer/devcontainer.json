@@ -2,9 +2,10 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/cpp
 {
 	"name": "C++",
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
+	"image": "mcr.microsoft.com/devcontainers/cpp:1-ubuntu-24.04",
+	// "build": {
+	// 	"dockerfile": "Dockerfile"
+	// },
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
