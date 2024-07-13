@@ -20,6 +20,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
+				"ms-vscode.cpptools",
+				"xaver.clang-format",
 				"ms-vscode.makefile-tools",
 				"jeff-hykin.better-cpp-syntax"
 			]
@@ -30,7 +32,6 @@
 	"remoteUser": "vscode",
 
 	"mounts": [
-		"source=cpp-data,target=/workspaces/data,type=volume"
-	],
-	"postCreateCommand": "chmod +x /workspaces/cool-db/data/reset_data.sh && /workspaces/cool-db/data/reset_data.sh"
+		"source=${localWorkspaceFolder}/data,target=/workspaces/cool-db/data,type=bind,consistency=cached"
+	]
 }
