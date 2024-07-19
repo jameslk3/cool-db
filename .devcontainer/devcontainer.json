@@ -21,6 +21,7 @@
 		"vscode": {
 			"extensions": [
 				"ms-vscode.cpptools",
+				"ms-vscode.cmake-tools",
 				"xaver.clang-format",
 				"ms-vscode.makefile-tools",
 				"jeff-hykin.better-cpp-syntax"
@@ -33,5 +34,7 @@
 
 	"mounts": [
 		"source=${localWorkspaceFolder}/data,target=/workspaces/cool-db/data,type=bind,consistency=cached"
-	]
+	],
+
+	    "postCreateCommand": "sudo apt-get update && sudo apt-get install -y cmake git && git clone https://github.com/google/googletest.git googletest && cd googletest && cmake . && make && sudo make install"
 }
