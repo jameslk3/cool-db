@@ -16,6 +16,9 @@ This struct represents a cell in a table. It holds a value that can be one of th
 */
 struct Cell {
 	CellValue value;
+
+	// Custom constructor to initialize the value
+	Cell(const CellValue& value) : value(value) {}
 	
 };
 
@@ -24,7 +27,19 @@ struct Cell {
 This struct represents a row in a table. It holds a vector of shared pointers to cells.
 */
 struct Row {
-	std::vector<std::shared_ptr<Cell>> cells;
+	std::vector<Cell> cells;
+
+	// Custom constructor to fill the cells vector
+	Row(const std::vector<Cell>& cells) {
+		for (const auto& cell : cells) {
+			this->cells.push_back(cell);
+		}
+	}
+
+	// Getter
+	std::vector<Cell> get_cells() const {
+		return cells;
+	}
 };
 
 /*
@@ -64,6 +79,46 @@ public:
 		for (const auto& column : columns) {
 				this->columns.push_back({ column.first, column.second });
 		}
+	}
+
+	// Function to add a row to the table
+	void add_row(const std::vector<Cell>& cells) {
+		// Validate the row
+		if (!validate_row(cells)) {
+			throw std::invalid_argument("Row does not match the types of the columns");
+		}
+		
+		// If cells are valid, construct a new row and add it to the table
+		rows.push_back(Row(cells));
+		num_rows++;
+	}
+
+	bool validate_cell(const Cell& cell, ColumnType type) {
+		switch (type) {
+		case ColumnType::INT:
+			return std::holds_alternative<int>(cell.value);
+		case ColumnType::DOUBLE:
+			return std::holds_alternative<double>(cell.value);
+		case ColumnType::STRING:
+			return std::holds_alternative<std::string>(cell.value);
+		default:
+			return false;
+		}
+	}
+
+	bool validate_row(const std::vector<Cell>& cells) {
+		// Check if the types of the cells match the types of the columns
+		if (cells.size() != num_cols) {
+			return false;
+		}
+
+		// Check the types of the cells, they could hold any of the types in the CellValue variant, so we need to check if they match with ColumnType
+		for (unsigned int i = 0; i < cells.size(); i++) {
+			if (!validate_cell(cells[i], columns[i].type)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	// Getters

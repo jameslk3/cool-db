@@ -33,3 +33,24 @@ TEST_F(TableTests, TestTableConstructor) {
 	EXPECT_EQ(table->get_columns()[2].type, ColumnType::STRING);
 	EXPECT_EQ(table->get_columns()[2].name, "string_col");
 }
+
+TEST_F(TableTests, TestAddRow) {
+	std::vector<Cell> cells = {
+		Cell(1),
+		Cell(2.0),
+		Cell("test"),
+	};
+	table->add_row(cells);
+	EXPECT_EQ(table->get_num_rows(), 1);
+	EXPECT_EQ(std::get<int>(table->get_rows()[0].get_cells()[0].value), 1);
+	EXPECT_EQ(std::get<double>(table->get_rows()[0].get_cells()[1].value), 2.0);
+	EXPECT_EQ(std::get<std::string>(table->get_rows()[0].get_cells()[2].value), "test");
+
+	// Test adding a row with invalid types
+	std::vector<Cell> invalid_cells = {
+		Cell(1),
+		Cell("test"),
+		Cell(2.0),
+	};
+	EXPECT_THROW(table->add_row(invalid_cells), std::invalid_argument);
+}
