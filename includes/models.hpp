@@ -19,6 +19,9 @@ struct Cell {
 
 	// Custom constructor to initialize the value
 	Cell(const CellValue& value) : value(value) {}
+
+	// Printer
+	friend std::ostream& operator<<(std::ostream& os, const Cell& cell);
 	
 };
 
@@ -37,9 +40,7 @@ struct Row {
 	}
 
 	// Getter
-	std::vector<Cell> get_cells() const {
-		return cells;
-	}
+	std::vector<Cell> get_cells() const { return cells; }
 };
 
 /*
@@ -54,6 +55,12 @@ enum class ColumnType {
 struct Column {
 	ColumnType 	type;
 	std::string name;
+
+	// Custom constructor to initialize the type and name
+	Column(ColumnType type, const std::string& name) : type(type), name(name) {}
+
+	// Printer
+	friend std::ostream& operator<<(std::ostream& os, const Column& column);
 };
 
 /*
@@ -72,71 +79,24 @@ private:
 public:
 
 	// Custom constructor with name and columns where columns holds data type and column name, respectively
-	Table(const std::string& name, const std::vector<std::pair<ColumnType, std::string>>& columns) {
-		this->name = name;
-		this->num_rows = 0;
-		this->num_cols = columns.size();
-		for (const auto& column : columns) {
-				this->columns.push_back({ column.first, column.second });
-		}
-	}
+	Table(const std::string& name, const std::vector<std::pair<ColumnType, std::string>>& columns);
 
 	// Function to add a row to the table
-	void add_row(const std::vector<Cell>& cells) {
-		// Validate the row
-		if (!validate_row(cells)) {
-			throw std::invalid_argument("Row does not match the types of the columns");
-		}
-		
-		// If cells are valid, construct a new row and add it to the table
-		rows.push_back(Row(cells));
-		num_rows++;
-	}
+	void add_row(const std::vector<Cell>& cells);
 
-	bool validate_cell(const Cell& cell, ColumnType type) {
-		switch (type) {
-		case ColumnType::INT:
-			return std::holds_alternative<int>(cell.value);
-		case ColumnType::DOUBLE:
-			return std::holds_alternative<double>(cell.value);
-		case ColumnType::STRING:
-			return std::holds_alternative<std::string>(cell.value);
-		default:
-			return false;
-		}
-	}
+	bool validate_cell(const Cell& cell, ColumnType type);
 
-	bool validate_row(const std::vector<Cell>& cells) {
-		// Check if the types of the cells match the types of the columns
-		if (cells.size() != num_cols) {
-			return false;
-		}
-
-		// Check the types of the cells, they could hold any of the types in the CellValue variant, so we need to check if they match with ColumnType
-		for (unsigned int i = 0; i < cells.size(); i++) {
-			if (!validate_cell(cells[i], columns[i].type)) {
-				return false;
-			}
-		}
-		return true;
-	}
+	bool validate_row(const std::vector<Cell>& cells);
 
 	// Getters
-	std::string get_name() const {
-		return name;
-	}
-	unsigned int get_num_rows() const {
-		return num_rows;
-	}
-	unsigned int get_num_cols() const {
-		return num_cols;
-	}
-	std::vector<Column> get_columns() const {
-		return columns;
-	}
-	std::vector<Row> get_rows() const {
-		return rows;
-	}
+	std::string get_name() const { return name; }
+	unsigned int get_num_rows() const { return num_rows; }
+	unsigned int get_num_cols() const { return num_cols; }
+	std::vector<Column> get_columns() const { return columns; }
+	std::vector<Row> get_rows() const { return rows; }
+
+	// Friend function to overload the << operator for the Table class
+	friend std::ostream& operator<<(std::ostream& os, const Table& table);
 };
 
 /*
@@ -144,8 +104,15 @@ public:
 This class serves as a manager for the database, or a layer of abstraction on top of the file system.
 */
 class Database {
-public:
 private:
+
+	std::string DB_PATH = "/workspaces/cool-db/data/live";
+
+public:
+
+	void add_table(Table &table) const;
+	void remove_table(std::string table_name) const;
+
 };
 
 #endif

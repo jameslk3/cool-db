@@ -14,7 +14,7 @@ protected:
 			{ColumnType::STRING, "string_col"},
 		};
 		std::string name = "test_table";
-		table = new Table(name, std::vector<std::pair<ColumnType, std::string>>(columns));
+		table = new Table(name, columns);
 	}
 
 	void TearDown() override {
@@ -53,4 +53,14 @@ TEST_F(TableTests, TestAddRow) {
 		Cell(2.0),
 	};
 	EXPECT_THROW(table->add_row(invalid_cells), std::invalid_argument);
+}
+
+TEST_F(TableTests, TestPrintTable) {
+	std::vector<Cell> cells = {
+		Cell(1),
+		Cell(2.6969),
+		Cell("test"),
+	};
+	table->add_row(cells);
+	std::cout << *table << std::endl;
 }

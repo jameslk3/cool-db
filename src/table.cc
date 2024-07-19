@@ -1,70 +1,93 @@
-#include "table.hpp"
+#include "models.hpp"
 
 #include <stdexcept>
 
-// ----------------------- CONSTRUCTORS ---------------------- //
-Table::Table(std::string name, std::vector<std::tuple<std::type_index, std::string>> columns) {
-    this->name = name;
-    for (auto column : columns) {
-        column_types.push_back(std::get<0>(column));
-        column_names.push_back(std::get<1>(column));
-    }
-    this->num_rows = 0;
-    this->num_cols = columns.size();
+// ----------------------- CONSTRUCTOR ---------------------- //
+Table::Table(const std::string& name, const std::vector<std::pair<ColumnType, std::string>>& columns) {
+	this->name = name;
+	this->num_rows = 0;
+	this->num_cols = columns.size();
+	for (const auto& column : columns) {
+					this->columns.push_back(Column(column.first, column.second));
+	}
 }
 
 // -------------------------- METHODS ------------------------ //
-std::string Table::get_name() const {
-    return this->name;
+void Table::add_row(const std::vector<Cell>& cells) {
+	// Validate the row
+	if (!validate_row(cells)) {
+		throw std::invalid_argument("Row does not match the types of the columns");
+	}
+	
+	// If cells are valid, construct a new row and add it to the table
+	rows.push_back(Row(cells));
+	num_rows++;
 }
 
-void Table::add_row(Row row) {
-    // Make sure row has the same number of columns as the table
-    if (row.cells.size() != this->num_cols) {
-        throw std::runtime_error("Row has incorrect number of columns");
-    }
-    
-    // Make sure the types of the cells in the row match the types of the columns in the table
+bool Table::validate_cell(const Cell& cell, ColumnType type) {
+	switch (type) {
+	case ColumnType::INT:
+		return std::holds_alternative<int>(cell.value);
+	case ColumnType::DOUBLE:
+		return std::holds_alternative<double>(cell.value);
+	case ColumnType::STRING:
+		return std::holds_alternative<std::string>(cell.value);
+	default:
+		return false;
+	}
+}
 
+bool Table::validate_row(const std::vector<Cell>& cells) {
+	// Check if the types of the cells match the types of the columns
+	if (cells.size() != num_cols) {
+		return false;
+	}
 
-    this->rows.push_back(row);
-    this->num_rows++;
+	// Check the types of the cells, they could hold any of the types in the CellValue variant, so we need to check if they match with ColumnType
+	for (unsigned int i = 0; i < cells.size(); i++) {
+		if (!validate_cell(cells[i], columns[i].type)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 
 // -------------------------- UTILS -------------------------- //
 std::ostream& operator<<(std::ostream& os, const Table& table) {
-    // Check if table has been created (has columns)
-    if (table.num_cols == 0) {
-        throw std::runtime_error("Table has no columns");
-    }
+	// Check if table has been created (has columns)
+	if (table.get_num_cols() == 0) {
+			throw std::runtime_error("Table has no columns");
+	}
 
-    // Print column types and names, in that order, separated by commas
-    for (unsigned int i = 0; i < table.num_cols; ++i) {
-        if (i != 0) {
-            os << ",";
-        }
-        os << table.column_types.at(i).name() << " " << table.column_names.at(i);
-    }
+	// Print column types and names, in that order, separated by commas
+	for (unsigned int i = 0; i < table.num_cols; ++i) {
+			if (i != 0) {
+					os << ",";
+			}
+		// Use the overloaded operator<< for Column
+		os << table.columns.at(i);
+	}
 
-    // Print newline
-    os << std::endl;
+	// Print newline
+	os << std::endl;
 
-    // Check if table has rows
-    if (table.num_rows == 0) {
-        return os;
-    }
+	// Check if table has rows
+	if (table.num_rows == 0) {
+			return os;
+	}
 
-    // Print row values
-    for (unsigned int i = 0; i < table.num_rows; ++i) {
-        for (unsigned int j = 0; j < table.num_cols; ++j) {
-            if (j != 0) {
-                os << ",";
-            }
-            os << table.rows.at(i).get_cell<std::string>(j).get_value();
-        }
-        os << std::endl;
-    }
+	// Print row values
+	for (unsigned int i = 0; i < table.num_rows; ++i) {
+		for (unsigned int j = 0; j < table.num_cols; ++j) {
+				if (j != 0) {
+						os << ",";
+				}
+				// Use the overloaded operator<< for Cell to visit the variant in type safe way
+				os << table.rows.at(i).cells.at(j);
+		}
+		os << std::endl;
+	}
 
-    return os;
+	return os;
 }
