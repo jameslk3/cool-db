@@ -1,6 +1,7 @@
 #include "models.hpp"
 
 #include <stdexcept>
+#include <fstream>
 
 // ----------------------- CONSTRUCTOR ---------------------- //
 Table::Table(const std::string& name, const std::vector<std::pair<ColumnType, std::string>>& columns) {
@@ -10,6 +11,47 @@ Table::Table(const std::string& name, const std::vector<std::pair<ColumnType, st
 	for (const auto& column : columns) {
 					this->columns.push_back(Column(column.first, column.second));
 	}
+}
+
+//TODOs: See note at bottom
+Table::Table(const std::string& file_path) {
+	std::ifstream ifs{file_path};
+
+	//Check if file is open
+	if (!ifs.is_open()) {
+		throw std::runtime_error("File could not be opened");
+	}
+
+	//Initializing table name
+	std::string table_name;
+	try {
+		ifs >> table_name;
+		this->name = table_name;
+	} catch (std::exception) {
+		throw std::runtime_error("problem with table name");
+	}
+	
+	//Initializing number of rows
+	unsigned int rows;
+	try {
+		ifs >> rows;
+		this->num_rows = rows;
+	} catch (std::exception) {
+		throw std::runtime_error("problem initializing number of rows");
+	}
+
+	//Initializing number of columns
+	unsigned int columns;
+	try {
+		ifs >> columns;
+		this->num_cols = columns;
+	} catch (std::exception) {
+		throw std::runtime_error("problem initializing number of columns");
+	}
+	
+	//TODO: Create Columns
+	//TODO: Create cells, put them into rows
+
 }
 
 // -------------------------- METHODS ------------------------ //
@@ -54,6 +96,7 @@ bool Table::validate_row(const std::vector<Cell>& cells) {
 
 
 // -------------------------- UTILS -------------------------- //
+//TODOs: see bottom
 std::ostream& operator<<(std::ostream& os, const Table& table) {
 	// Check if table has been created (has columns)
 	if (table.get_num_cols() == 0) {
@@ -90,4 +133,6 @@ std::ostream& operator<<(std::ostream& os, const Table& table) {
 	}
 
 	return os;
+
+	//TODO: Change to fit new table format
 }

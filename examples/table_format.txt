@@ -1,0 +1,7 @@
+[NAME, NO SPACES] - If there are spaces, std::runtime_error will be thrown
+[NUMBER OF ROWS] - Must be an integer, otherwise std::runtime_error will be thrown
+[NUMBER OF COLUMNS] - Must be an integer, otherwise std::runtime_error will be thrown
+[COLUMN NAMES & TYPES]
+[ROW 1]
+[ROW 2]
+[ETC.]

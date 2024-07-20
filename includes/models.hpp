@@ -81,6 +81,9 @@ public:
 	// Custom constructor with name and columns where columns holds data type and column name, respectively
 	Table(const std::string& name, const std::vector<std::pair<ColumnType, std::string>>& columns);
 
+	//Custom constructor from file
+	Table(const std::string& file_path);
+
 	// Function to add a row to the table
 	void add_row(const std::vector<Cell>& cells);
 
