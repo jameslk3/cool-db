@@ -1,5 +1,8 @@
+#include "models.hpp"
+
 #include <iostream>
 
 int main() {
-		std::cout << "Hello, World!" << std::endl;
+		Table table("./examples/sample_table_1.txt");
+		std::cout << table;
 }

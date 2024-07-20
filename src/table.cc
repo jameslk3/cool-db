@@ -13,7 +13,6 @@ Table::Table(const std::string& name, const std::vector<std::pair<ColumnType, st
 	}
 }
 
-//TODOs: See note at bottom
 Table::Table(const std::string& file_path) {
 	std::ifstream ifs{file_path};
 
@@ -48,10 +47,79 @@ Table::Table(const std::string& file_path) {
 	} catch (std::exception) {
 		throw std::runtime_error("problem initializing number of columns");
 	}
-	
-	//TODO: Create Columns
-	//TODO: Create cells, put them into rows
 
+	//Creating Columns
+	std::vector<Column> cols;
+	for (unsigned int i = 0; i < this->num_cols; ++i) {
+		ColumnType type;
+		std::string name;
+		try {
+			//Retrieving the ColumnType
+			std::string type_as_str;
+			ifs >> type_as_str;
+			type_as_str = type_as_str.substr(1, type_as_str.size() - 2);
+			if (type_as_str == "STRING") {
+				type = ColumnType::STRING;
+			} else if (type_as_str == "INT") {
+				type = ColumnType::INT;
+			} else if (type_as_str == "DOUBLE") {
+				type = ColumnType::DOUBLE;
+			} else {
+				throw std::runtime_error("");
+			}
+			
+			//Retrieving name of the column
+			ifs >> name;
+			name = name.substr(0, name.size() - 2);
+
+			//Create the column, add it to vector
+			Column col(type, name);
+			cols.push_back(col);
+
+		} catch (std::exception) {
+			throw std::runtime_error("Creating columns failed");
+		}
+	}
+	this->columns = cols; //assigning cols to columns
+
+	//Create cells, put them into rows
+	std::vector<Row> rows_vector;
+	for (unsigned int i = 0; i < num_rows; ++i) {
+		std::vector<Cell> cell_vector;
+		for (unsigned int j = 0; j < num_cols; ++j) {
+			try {
+				//Read in input as string
+				std::string input;
+				ifs >> input;
+				//Continues reading in input until a comma is reached
+				while (input.substr(input.size() - 1, std::string::npos) != ",") {
+					std::string input_continued;
+					ifs >> input_continued;
+					input += " " + input_continued;
+				}
+				//Convert input to integer or double (or don't convert) depending on ColumnType
+				//Then create cell and add cell to cell vector
+				if (this->columns.at(j).type == ColumnType::INT) {
+					int input_read = std::stoi(input);
+					Cell cell(input_read);
+					cell_vector.push_back(cell);
+				} else if (this->columns.at(j).type == ColumnType::DOUBLE) {
+					double input_read = std::stod(input);
+					Cell cell(input_read);
+					cell_vector.push_back(cell);
+				} else {
+					Cell cell(input.substr(0, input.size() - 1));
+					cell_vector.push_back(cell);
+				}
+			} catch (std::exception) {
+				throw std::runtime_error("error creating cell");
+			}
+		}
+		//Create row using cell_vector, add row to rows_vector
+		Row row(cell_vector);
+		rows_vector.push_back(row);
+	}
+	this->rows = rows_vector; //assign rows the value of rows_vector
 }
 
 // -------------------------- METHODS ------------------------ //
@@ -96,20 +164,23 @@ bool Table::validate_row(const std::vector<Cell>& cells) {
 
 
 // -------------------------- UTILS -------------------------- //
-//TODOs: see bottom
 std::ostream& operator<<(std::ostream& os, const Table& table) {
 	// Check if table has been created (has columns)
 	if (table.get_num_cols() == 0) {
 			throw std::runtime_error("Table has no columns");
 	}
 
+	//Start of file
+	os << table.name << std::endl;
+	os << table.num_rows << std::endl;
+	os << table.num_cols << std::endl;
+
 	// Print column types and names, in that order, separated by commas
 	for (unsigned int i = 0; i < table.num_cols; ++i) {
-			if (i != 0) {
-					os << ",";
-			}
 		// Use the overloaded operator<< for Column
 		os << table.columns.at(i);
+		
+		os << ", ";
 	}
 
 	// Print newline
@@ -123,16 +194,13 @@ std::ostream& operator<<(std::ostream& os, const Table& table) {
 	// Print row values
 	for (unsigned int i = 0; i < table.num_rows; ++i) {
 		for (unsigned int j = 0; j < table.num_cols; ++j) {
-				if (j != 0) {
-						os << ",";
-				}
 				// Use the overloaded operator<< for Cell to visit the variant in type safe way
 				os << table.rows.at(i).cells.at(j);
+
+				os << ", ";
 		}
 		os << std::endl;
 	}
 
 	return os;
-
-	//TODO: Change to fit new table format
 }

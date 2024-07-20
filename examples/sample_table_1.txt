@@ -1,6 +1,6 @@
 data_table
 2
 3
-(STRING, animals), (STRING, action), (DOUBLE, number)
-chickens, run away, 3.14
-turtles, waddle closer, 3.16
+(STRING, animals), (STRING, action), (DOUBLE, number), 
+chickens, run away, 3.14, 
+turtles, waddle closer, 3.16, 

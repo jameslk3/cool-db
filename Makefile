@@ -13,8 +13,8 @@ exec: bin/exec
 tests: bin/tests
 reset data: bin/reset
 
-bin/exec: ./includes/table.hpp src/main.cc
-	$(CXX) $(INCLUDES) $(CXXFLAGS) $(EXTRA_CXX_FLAGS) ./src/table.cc ./src/main.cc -o bin/exec
+bin/exec: ./includes/models.hpp ./src/main.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc
+	$(CXX) $(INCLUDES) $(CXXFLAGS) ./src/main.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc -o bin/exec
 
 bin/tests: ./includes/models.hpp tests/table_tests.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc
 	$(CXX) $(INCLUDES) $(CXXFLAGS) $(LDFLAGS) tests/table_tests.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc -o bin/tests $(GTEST_LIBS)
