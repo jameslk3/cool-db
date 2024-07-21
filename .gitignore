@@ -33,4 +33,4 @@
 
 googletest
 CMakeFiles
-bin/**
+bin/
