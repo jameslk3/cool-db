@@ -193,12 +193,8 @@ std::ostream& operator<<(std::ostream& os, const Table& table) {
 
 	// Print row values
 	for (unsigned int i = 0; i < table.num_rows; ++i) {
-		for (unsigned int j = 0; j < table.num_cols; ++j) {
-				// Use the overloaded operator<< for Cell to visit the variant in type safe way
-				os << table.rows.at(i).cells.at(j);
-
-				os << ", ";
-		}
+		// Use the overloaded operator<< for Row
+		os << table.rows.at(i);
 		os << std::endl;
 	}
 

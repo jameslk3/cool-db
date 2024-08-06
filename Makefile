@@ -16,8 +16,10 @@ reset data: bin/reset
 bin/exec: ./includes/models.hpp ./src/main.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc
 	$(CXX) $(INCLUDES) $(CXXFLAGS) ./src/main.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc -o bin/exec
 
-bin/tests: ./includes/models.hpp tests/table_tests.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc
-	$(CXX) $(INCLUDES) $(CXXFLAGS) $(LDFLAGS) tests/table_tests.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc -o bin/tests $(GTEST_LIBS)
+TEST_FILES = tests/database_tests.cc tests/table_tests.cc
+
+bin/tests: ./includes/models.hpp $(TEST_FILES) ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc
+	$(CXX) $(INCLUDES) $(CXXFLAGS) $(LDFLAGS) $(TEST_FILES) ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc -o bin/tests $(GTEST_LIBS)
 
 bin/reset:
 	./workspaces/cool-db/data/reset_data.sh

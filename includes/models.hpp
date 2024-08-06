@@ -41,6 +41,9 @@ struct Row {
 
 	// Getter
 	std::vector<Cell> get_cells() const { return cells; }
+
+	// Printer
+	friend std::ostream& operator<<(std::ostream& os, const Row& row);
 };
 
 /*
@@ -98,6 +101,9 @@ public:
 	std::vector<Column> get_columns() const { return columns; }
 	std::vector<Row> get_rows() const { return rows; }
 
+	// Setters
+	void set_name(const std::string& name) { this->name = name; }
+
 	// Friend function to overload the << operator for the Table class
 	friend std::ostream& operator<<(std::ostream& os, const Table& table);
 
@@ -112,12 +118,18 @@ This class serves as a manager for the database, or a layer of abstraction on to
 class Database {
 private:
 
-	std::string DB_PATH = "/workspaces/cool-db/data/live";
+	std::string path;
 
 public:
 
-	void add_table(Table &table) const;
+	// Custom constructor
+	Database(const std::string& path);
+
+	void add_table(Table& table) const;
 	void remove_table(std::string table_name) const;
+
+	// Getters
+	std::string get_path() const { return path; }
 
 };
 
