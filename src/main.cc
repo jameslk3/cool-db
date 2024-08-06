@@ -3,6 +3,6 @@
 #include <iostream>
 
 int main() {
-		Table table("./examples/sample_table_1.txt");
+		Table table("/workspaces/cool-db/data/seed/sample_table_1.txt");
 		std::cout << table;
 }

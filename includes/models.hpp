@@ -100,6 +100,9 @@ public:
 
 	// Friend function to overload the << operator for the Table class
 	friend std::ostream& operator<<(std::ostream& os, const Table& table);
+
+	// Friend function to overload the == operator for the Table class
+	friend bool operator==(const Table& lhs, const Table& rhs);
 };
 
 /*

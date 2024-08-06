@@ -64,3 +64,29 @@ TEST_F(TableTests, TestPrintTable) {
 	table->add_row(cells);
 	std::cout << *table << std::endl;
 }
+
+TEST_F(TableTests, TestTableConstructorCompatability) {
+	std::vector<std::pair<ColumnType, std::string>> columns = {
+		{ColumnType::STRING, "animals"},
+		{ColumnType::STRING, "action"},
+		{ColumnType::DOUBLE, "number"},
+	};
+	Table entered_table = Table("sample_table_1", columns);
+
+	std::vector<Cell> row_1 = {
+		Cell("chickens"),
+		Cell("run away"),
+		Cell(3.14),
+	};
+	entered_table.add_row(row_1);
+
+	std::vector<Cell> row_2 = {
+		Cell("turtles"),
+		Cell("waddle closer"),
+		Cell(3.16),
+	};
+	entered_table.add_row(row_2);
+
+	Table table_from_file = Table("/workspaces/cool-db/data/seed/sample_table_1.txt");
+	EXPECT_TRUE(entered_table == table_from_file);
+}

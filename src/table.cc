@@ -170,7 +170,7 @@ std::ostream& operator<<(std::ostream& os, const Table& table) {
 			throw std::runtime_error("Table has no columns");
 	}
 
-	//Start of file
+	// Start of file
 	os << table.name << std::endl;
 	os << table.num_rows << std::endl;
 	os << table.num_cols << std::endl;
@@ -203,4 +203,34 @@ std::ostream& operator<<(std::ostream& os, const Table& table) {
 	}
 
 	return os;
+}
+
+bool operator==(const Table& lhs, const Table& rhs) {
+	// Check if the tables have the same number of rows and columns
+	if (lhs.get_num_rows() != rhs.get_num_rows() || lhs.get_num_cols() != rhs.get_num_cols()) {
+		return false;
+	}
+
+	// Check if the tables have the same name
+	if (lhs.get_name() != rhs.get_name()) {
+		return false;
+	}
+
+	// Check if the tables have the same columns
+	for (unsigned int i = 0; i < lhs.get_num_cols(); ++i) {
+		if (lhs.get_columns().at(i).type != rhs.get_columns().at(i).type || lhs.get_columns().at(i).name != rhs.get_columns().at(i).name) {
+			return false;
+		}
+	}
+
+	// Check if the tables have the same rows
+	for (unsigned int i = 0; i < lhs.get_num_rows(); ++i) {
+		for (unsigned int j = 0; j < lhs.get_num_cols(); ++j) {
+			if (lhs.get_rows().at(i).get_cells().at(j).value != rhs.get_rows().at(i).get_cells().at(j).value) {
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
