@@ -3,7 +3,9 @@
 #include <stdexcept>
 #include <fstream>
 
-// ----------------------- CONSTRUCTOR ---------------------- //
+// ------------------------------------------- CONSTRUCTORS ---------------------------------------------- //
+
+// Constructor for creating a new table from scratch
 Table::Table(const std::string& name, const std::vector<std::pair<ColumnType, std::string>>& columns) {
 	this->name = name;
 	this->num_rows = 0;
@@ -13,6 +15,7 @@ Table::Table(const std::string& name, const std::vector<std::pair<ColumnType, st
 	}
 }
 
+// Constructor for reading from a file
 Table::Table(const std::string& file_path) {
 	std::ifstream ifs{file_path};
 
@@ -80,9 +83,9 @@ Table::Table(const std::string& file_path) {
 			throw std::runtime_error("Creating columns failed");
 		}
 	}
-	this->columns = cols; //assigning cols to columns
+	this->columns = cols; // assigning cols to columns
 
-	//Create cells, put them into rows
+	// Create cells, put them into rows
 	std::vector<Row> rows_vector;
 	for (unsigned int i = 0; i < num_rows; ++i) {
 		std::vector<Cell> cell_vector;
@@ -122,19 +125,19 @@ Table::Table(const std::string& file_path) {
 	this->rows = rows_vector; //assign rows the value of rows_vector
 }
 
-// -------------------------- METHODS ------------------------ //
-void Table::add_row(const std::vector<Cell>& cells) {
+// ------------------------------------------------- METHODS ------------------------------------------------- //
+void TableEditor::add_row(const std::vector<Cell>& cells) {
 	// Validate the row
 	if (!validate_row(cells)) {
 		throw std::invalid_argument("Row does not match the types of the columns");
 	}
 	
 	// If cells are valid, construct a new row and add it to the table
-	rows.push_back(Row(cells));
-	num_rows++;
+	table.get_rows_mut().push_back(Row(cells));
+	table.get_num_rows_mut()++;
 }
 
-bool Table::validate_cell(const Cell& cell, ColumnType type) {
+bool TableEditor::validate_cell(const Cell& cell, ColumnType type) {
 	switch (type) {
 	case ColumnType::INT:
 		return std::holds_alternative<int>(cell.value);
@@ -147,15 +150,15 @@ bool Table::validate_cell(const Cell& cell, ColumnType type) {
 	}
 }
 
-bool Table::validate_row(const std::vector<Cell>& cells) {
+bool TableEditor::validate_row(const std::vector<Cell>& cells) {
 	// Check if the types of the cells match the types of the columns
-	if (cells.size() != num_cols) {
+	if (cells.size() != table.get_num_cols()) {
 		return false;
 	}
 
 	// Check the types of the cells, they could hold any of the types in the CellValue variant, so we need to check if they match with ColumnType
 	for (unsigned int i = 0; i < cells.size(); i++) {
-		if (!validate_cell(cells[i], columns[i].type)) {
+		if (!validate_cell(cells[i], table.get_columns()[i].type)) {
 			return false;
 		}
 	}
@@ -163,7 +166,7 @@ bool Table::validate_row(const std::vector<Cell>& cells) {
 }
 
 
-// -------------------------- UTILS -------------------------- //
+// ------------------------------------------------- UTILS ------------------------------------------------- //
 std::ostream& operator<<(std::ostream& os, const Table& table) {
 	// Check if table has been created (has columns)
 	if (table.get_num_cols() == 0) {

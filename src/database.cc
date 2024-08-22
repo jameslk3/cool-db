@@ -46,3 +46,11 @@ void Database::add_table(Table& table) const {
 		ofs << row << std::endl;
 	}
 }
+
+// Remove a table from the database
+void Database::remove_table(std::string table_name) const {
+	if (!std::filesystem::exists(std::filesystem::path(this->path + "/" + table_name + ".txt"))) {
+		throw std::invalid_argument("Table does not exist");
+	}
+	std::filesystem::remove(std::filesystem::path(this->path + "/" + table_name + ".txt"));
+}

@@ -11,7 +11,7 @@ LDFLAGS = -L/usr/local/lib
 
 exec: bin/exec
 tests: bin/tests
-reset data: bin/reset
+reset: bin/reset
 
 bin/exec: ./includes/models.hpp ./src/main.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc
 	$(CXX) $(INCLUDES) $(CXXFLAGS) ./src/main.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc -o bin/exec
@@ -22,7 +22,7 @@ bin/tests: ./includes/models.hpp $(TEST_FILES) ./src/database.cc ./src/table.cc 
 	$(CXX) $(INCLUDES) $(CXXFLAGS) $(LDFLAGS) $(TEST_FILES) ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc -o bin/tests $(GTEST_LIBS)
 
 bin/reset:
-	./workspaces/cool-db/data/reset_data.sh
+	./data/reset_data.sh
 
 .PHONY: clean exec tests
 

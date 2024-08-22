@@ -20,8 +20,9 @@ TEST_F(DatabaseTests, TestDatabaseConstructor) {
 	EXPECT_EQ(db->get_path(), "/workspaces/cool-db/data/live");
 }
 
-TEST_F(DatabaseTests, TestAddTable) {
+TEST_F(DatabaseTests, TestAddAndRemoveTable) {
 	Table table("/workspaces/cool-db/data/seed/sample_table_1.txt");
 	table.set_name("created_table");
 	db->add_table(table);
+	db->remove_table("created_table");
 }
