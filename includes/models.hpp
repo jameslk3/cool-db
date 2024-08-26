@@ -22,7 +22,11 @@ struct Cell {
 
 	// Printer
 	friend std::ostream& operator<<(std::ostream& os, const Cell& cell);
-	
+
+	// Serialization and deserialization
+	void serialize(std::ostream& os) const;
+	void deserialize(std::istream& is);
+
 };
 
 /*
@@ -44,6 +48,10 @@ struct Row {
 
 	// Printer
 	friend std::ostream& operator<<(std::ostream& os, const Row& row);
+
+	// Serialization and deserialization
+	void serialize(std::ostream& os) const;
+	void deserialize(std::istream& is);
 };
 
 /*
@@ -64,6 +72,10 @@ struct Column {
 
 	// Printer
 	friend std::ostream& operator<<(std::ostream& os, const Column& column);
+
+	// Serialization and deserialization
+	void serialize(std::ostream& os) const;
+	void deserialize(std::istream& is);
 };
 
 /*
@@ -107,6 +119,10 @@ public:
 
 	// Friend function to overload the == operator for the Table class
 	friend bool operator==(const Table& lhs, const Table& rhs);
+
+	// Serialization and deserialization
+	void serialize(std::ostream& os) const;
+	void deserialize(std::istream& is);
 };
 
 

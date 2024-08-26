@@ -13,12 +13,13 @@ exec: bin/exec
 tests: bin/tests
 reset: bin/reset
 
-bin/exec: ./includes/models.hpp ./src/main.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc
+SOURCE_FILES = ./src/main.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc
+TEST_FILES = tests/database_tests.cc tests/table_tests.cc tests/cell_tests.cc
+
+bin/exec: ./includes/models.hpp $(SOURCE_FILES)
 	$(CXX) $(INCLUDES) $(CXXFLAGS) ./src/main.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc -o bin/exec
 
-TEST_FILES = tests/database_tests.cc tests/table_tests.cc
-
-bin/tests: ./includes/models.hpp $(TEST_FILES) ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc
+bin/tests: ./includes/models.hpp $(TEST_FILES) $(SOURCE_FILES)
 	$(CXX) $(INCLUDES) $(CXXFLAGS) $(LDFLAGS) $(TEST_FILES) ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc -o bin/tests $(GTEST_LIBS)
 
 bin/reset:
