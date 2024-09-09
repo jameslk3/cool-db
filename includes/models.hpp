@@ -22,7 +22,11 @@ struct Cell {
 
 	// Printer
 	friend std::ostream& operator<<(std::ostream& os, const Cell& cell);
-	
+
+	// Serialization and deserialization
+	void serialize(std::ostream& os) const;
+	void deserialize(std::istream& is);
+
 };
 
 /*
@@ -40,7 +44,14 @@ struct Row {
 	}
 
 	// Getter
-	std::vector<Cell> get_cells() const { return cells; }
+	const std::vector<Cell>& get_cells() const { return cells; }
+
+	// Printer
+	friend std::ostream& operator<<(std::ostream& os, const Row& row);
+
+	// Serialization and deserialization
+	void serialize(std::ostream& os) const;
+	void deserialize(std::istream& is);
 };
 
 /*
@@ -61,6 +72,10 @@ struct Column {
 
 	// Printer
 	friend std::ostream& operator<<(std::ostream& os, const Column& column);
+
+	// Serialization and deserialization
+	void serialize(std::ostream& os) const;
+	void deserialize(std::istream& is);
 };
 
 /*
@@ -81,23 +96,35 @@ public:
 	// Custom constructor with name and columns where columns holds data type and column name, respectively
 	Table(const std::string& name, const std::vector<std::pair<ColumnType, std::string>>& columns);
 
-	// Function to add a row to the table
-	void add_row(const std::vector<Cell>& cells);
+	// Custom constructor from file
+	Table(const std::string& file_path);
 
-	bool validate_cell(const Cell& cell, ColumnType type);
-
-	bool validate_row(const std::vector<Cell>& cells);
-
-	// Getters
+	// Const getters
 	std::string get_name() const { return name; }
 	unsigned int get_num_rows() const { return num_rows; }
 	unsigned int get_num_cols() const { return num_cols; }
-	std::vector<Column> get_columns() const { return columns; }
-	std::vector<Row> get_rows() const { return rows; }
+	const std::vector<Row>& get_rows() const { return rows; }
+	const std::vector<Column>& get_columns() const { return columns; }
+	// Mutable getters
+	unsigned int& get_num_rows_mut() { return num_rows; }
+	unsigned int& get_num_cols_mut() { return num_cols; }
+	std::vector<Row>& get_rows_mut() { return rows; }
+	std::vector<Column>& get_columns_mut() { return columns; }
+
+	// Setters
+	void set_name(const std::string& name) { this->name = name; }
 
 	// Friend function to overload the << operator for the Table class
 	friend std::ostream& operator<<(std::ostream& os, const Table& table);
+
+	// Friend function to overload the == operator for the Table class
+	friend bool operator==(const Table& lhs, const Table& rhs);
+
+	// Serialization and deserialization
+	void serialize(std::ostream& os) const;
+	void deserialize(std::istream& is);
 };
+
 
 /*
 ------------------- Database ------------------- //
@@ -106,13 +133,41 @@ This class serves as a manager for the database, or a layer of abstraction on to
 class Database {
 private:
 
-	std::string DB_PATH = "/workspaces/cool-db/data/live";
+	std::string path;
 
 public:
 
-	void add_table(Table &table) const;
+	// Custom constructor
+	Database(const std::string& path);
+
+	void add_table(Table& table) const;
 	void remove_table(std::string table_name) const;
 
+	// Getters
+	std::string get_path() const { return path; }
+
+};
+
+/*
+------------------- Table Editor ------------------- //
+This class serves as a manager for the table, allowing for editing and manipulation of the table's data.
+*/
+class TableEditor {
+private:
+	Table& table;
+
+public:
+	TableEditor(Table& table) : table(table) {}
+	// Constructor to create a TableEditor for a table that already exists
+	TableEditor(Database& db, const std::string& name) : table(*(new Table(db.get_path() + "/" + name + ".txt"))) {};
+
+	// Function to add a row to the table
+	void add_row(const std::vector<Cell>& cells);
+	bool validate_cell(const Cell& cell, ColumnType type);
+	bool validate_row(const std::vector<Cell>& cells);
+
+	// Getter (for testing purposes)
+	const Table& get_table() const { return table; }
 };
 
 #endif

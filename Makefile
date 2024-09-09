@@ -11,16 +11,19 @@ LDFLAGS = -L/usr/local/lib
 
 exec: bin/exec
 tests: bin/tests
-reset data: bin/reset
+reset: bin/reset
 
-bin/exec: ./includes/table.hpp src/main.cc
-	$(CXX) $(INCLUDES) $(CXXFLAGS) $(EXTRA_CXX_FLAGS) ./src/table.cc ./src/main.cc -o bin/exec
+SOURCE_FILES = ./src/main.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc
+TEST_FILES = tests/database_tests.cc tests/table_tests.cc tests/cell_tests.cc
 
-bin/tests: ./includes/models.hpp tests/table_tests.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc
-	$(CXX) $(INCLUDES) $(CXXFLAGS) $(LDFLAGS) tests/table_tests.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc -o bin/tests $(GTEST_LIBS)
+bin/exec: ./includes/models.hpp $(SOURCE_FILES)
+	$(CXX) $(INCLUDES) $(CXXFLAGS) ./src/main.cc ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc -o bin/exec
+
+bin/tests: ./includes/models.hpp $(TEST_FILES) $(SOURCE_FILES)
+	$(CXX) $(INCLUDES) $(CXXFLAGS) $(LDFLAGS) $(TEST_FILES) ./src/database.cc ./src/table.cc ./src/row.cc ./src/column.cc ./src/cell.cc -o bin/tests $(GTEST_LIBS)
 
 bin/reset:
-	./workspaces/cool-db/data/reset_data.sh
+	./data/reset_data.sh
 
 .PHONY: clean exec tests
 
